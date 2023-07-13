@@ -13,7 +13,6 @@ import kea.alog.issue.domain.BaseTimeEntity;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Setter
 public class Issue extends BaseTimeEntity implements Serializable{
     
     @Id
