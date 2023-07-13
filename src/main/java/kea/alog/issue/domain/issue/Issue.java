@@ -1,14 +1,11 @@
 package kea.alog.issue.domain.issue;
 import java.io.Serializable;
 
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.*;
 import kea.alog.issue.domain.BaseTimeEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Component
 @Entity
@@ -16,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
+@Setter
 public class Issue extends BaseTimeEntity implements Serializable{
     
     @Id
