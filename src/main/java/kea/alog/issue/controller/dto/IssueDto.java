@@ -10,7 +10,6 @@ public class IssueDto {
     @Getter
     @RequiredArgsConstructor
     public static class IssueCreateRequestDto {
-        private Long issuePk;
         private String issueTitle;
         private String issueDescription;
         private String issueAuthorNn;
