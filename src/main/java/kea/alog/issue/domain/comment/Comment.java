@@ -6,15 +6,12 @@ import org.springframework.stereotype.Component;
 import jakarta.persistence.*;
 import kea.alog.issue.domain.BaseTimeEntity;
 import kea.alog.issue.domain.issue.Issue;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Component
 @Entity
 @Table(name = "comment")
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 public class Comment extends BaseTimeEntity implements Serializable{
@@ -24,32 +21,28 @@ public class Comment extends BaseTimeEntity implements Serializable{
     @Column(name = "comment_pk")
     private Long commentPk;
 
+    @Column(name = "p_pk")
+    public Long pjPk;
+
+    @Column(name = "team_pk")
+    public Long teamPk;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "issue_pk")
+    private Issue issuePk;
+
     @Column(name = "comment_content", length=200)
     private String commentContent;
 
-    @Column(name = "comment_author_nn", length=10)
-    private String commentAuthorNn;
-
     @Column(name = "comment_author_pk")
     private Long commentAuthorPk;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "issue")
-    private Issue issue;
     
-    @Column(name = "project_pk")
-    private Long projectPk;
-
-    @Column (name = "topic_pk")
-    private Long topicPk;
-    
-    @Builder
-    public Comment(String commentContent, String commentAuthorNn, Long commentAuthorPk, Issue issue, Long projectPk, Long topicPk){
+    @Builder(toBuilder = true)
+    public Comment(Long pjPk, Long teamPk, String commentContent, Long commentAuthorPk, Issue issuePk){
+        this.issuePk = issuePk;
+        this.pjPk = pjPk;
+        this.teamPk = teamPk;
         this.commentContent = commentContent;
-        this.commentAuthorNn = commentAuthorNn;
         this.commentAuthorPk = commentAuthorPk;
-        this.issue = issue;
-        this.projectPk = projectPk;
-        this.topicPk = topicPk;
     }
 }
