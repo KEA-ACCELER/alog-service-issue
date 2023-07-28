@@ -76,5 +76,17 @@ public class IssueDto {
             return this.issuePk != null;
         }
     }
+    @Getter
+    @NoArgsConstructor
+    public static class ChangeStatusOrLabel{
+        private Long issuePk;
+        private String value;
+
+        @Builder
+        public ChangeStatusOrLabel(Long issuePk, String value){
+            this.issuePk = issuePk;
+            this.value = value;
+        }
+    }
 }
 

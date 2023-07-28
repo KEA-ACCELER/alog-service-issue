@@ -31,7 +31,7 @@ public class IssueService {
                     .issueStatus(IssueStatus.valueOf(issueCreateRequestDto.getIssueStatus()))
                     .issueLabel(IssueLabel.valueOf(issueCreateRequestDto.getIssueLabel()))
                     .todoPk(issueCreateRequestDto.getTodoPk())
-                    .issueOpened(issueCreateRequestDto.getIssueOpened())
+                    .issueOpened(true)
                     .issueAssigneePk(issueCreateRequestDto.getIssueAssigneePk())
                     .fileLink(issueCreateRequestDto.getFileLink())
                     .issueId(issueCreateRequestDto.getIssueId())
@@ -41,10 +41,11 @@ public class IssueService {
     }
 
     @Transactional
-    public Long deleteIssue(Long issuePk){
+    public Long closedIssue(Long issuePk){
         Optional<Issue> optIssue = issueRepository.findById(issuePk);
-        if(optIssue.isPresent()){
-            issueRepository.delete(optIssue.get());
+        if(optIssue.isPresent() && optIssue.get().getIssueOpened()){
+            Issue issue = optIssue.get().toBuilder().issueOpened(false).build();
+            issueRepository.save(issue);
             return issuePk;
         } else return 0L;
     }
@@ -73,5 +74,36 @@ public class IssueService {
         }
         else return IssueResponseDto.builder().build();
     }
+    @Transactional
+    public boolean changeStatus(ChangeStatusOrLabel reqData){
+        try{
+            Optional<Issue> optIssue = issueRepository.findById(reqData.getIssuePk());
+            if(optIssue.isPresent()){
+                IssueStatus issueStatus = IssueStatus.valueOf(reqData.getValue());
+                Issue issue = optIssue.get().toBuilder().issueStatus(issueStatus).build();
+                issueRepository.save(issue);
+                if(optIssue.get().getIssueStatus().equals(IssueStatus.DONE)) closedIssue(reqData.getIssuePk());
+                return true;
+            } else return false;
+        } catch(IllegalArgumentException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
+    @Transactional
+    public boolean changeLabel(ChangeStatusOrLabel reqData){
+        try{
+            Optional<Issue> optIssue = issueRepository.findById(reqData.getIssuePk());
+            if(optIssue.isPresent()) {
+                IssueLabel issueLabel = IssueLabel.valueOf(reqData.getValue());
+                Issue issue = optIssue.get().toBuilder().issueLabel(issueLabel).build();
+                issueRepository.save(issue);
+                return true;
+            } else return false;
+        } catch(IllegalArgumentException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
