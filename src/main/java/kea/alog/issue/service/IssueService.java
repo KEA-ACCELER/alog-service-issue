@@ -47,8 +47,6 @@ public class IssueService {
             issueRepository.delete(optIssue.get());
             return issuePk;
         } else return 0L;
-        
-        
     }
 
     @Transactional
