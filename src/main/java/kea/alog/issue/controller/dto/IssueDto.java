@@ -78,13 +78,11 @@ public class IssueDto {
     }
     @Getter
     @NoArgsConstructor
-    public static class ChangeStatusOrLabel{
-        private Long issuePk;
+    public static class ChangeStatusOrLabelDto{
         private String value;
 
         @Builder
-        public ChangeStatusOrLabel(Long issuePk, String value){
-            this.issuePk = issuePk;
+        public ChangeStatusOrLabelDto(String value){
             this.value = value;
         }
     }

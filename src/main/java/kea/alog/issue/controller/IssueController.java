@@ -28,13 +28,13 @@ public class IssueController {
         } else {
             Result result = Result.builder()
                 .isSuccess(false)
-                .message("Success Created")
+                .message("Failed Created")
                 .build();
             return ResponseEntity.badRequest().body(result);
         }
     }
 
-    @DeleteMapping("/close/{issuePk}")
+    @PutMapping("/close/{issuePk}")
     public ResponseEntity<Result> closedIssue(@PathVariable("issuePk") Long issuePk){
         Long delPk = issueService.closedIssue(issuePk);
         if(delPk > 0L) {
@@ -71,9 +71,10 @@ public class IssueController {
             return ResponseEntity.badRequest().body(result);
         }
     }
-    @PatchMapping("/changeStatus")
-    public ResponseEntity<Result> changeStatus(@RequestBody ChangeStatusOrLabel changeStatusOrLabel){
-        boolean isSuccess = issueService.changeStatus(changeStatusOrLabel);
+    
+    @PutMapping("/{issuePk}/changeStatus")
+    public ResponseEntity<Result> changeStatus(@PathVariable Long issuePk, @RequestBody ChangeStatusOrLabelDto changeStatusOrLabel){
+        boolean isSuccess = issueService.changeStatus(issuePk, changeStatusOrLabel);
         if(isSuccess){
             Result result = Result.builder()
                                 .data(changeStatusOrLabel)
@@ -89,9 +90,9 @@ public class IssueController {
             return ResponseEntity.badRequest().body(result);
         }
     }
-    @PatchMapping("/changeLabel")
-    public ResponseEntity<Result> changeLabel(@RequestBody ChangeStatusOrLabel changeStatusOrLabel) {
-        boolean isSuccess = issueService.changeLabel(changeStatusOrLabel);
+    @PutMapping("/{issuePk}/changeLabel")
+    public ResponseEntity<Result> changeLabel(@PathVariable Long issuePk, @RequestBody ChangeStatusOrLabelDto changeStatusOrLabel) {
+        boolean isSuccess = issueService.changeLabel(issuePk, changeStatusOrLabel);
         if(isSuccess){
             Result result = Result.builder()
                                 .data(changeStatusOrLabel)

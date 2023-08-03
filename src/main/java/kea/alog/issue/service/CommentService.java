@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.naming.spi.DirStateFactory.Result;
+
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import kea.alog.issue.controller.dto.CommentDto.CommentDataDto;
+import kea.alog.issue.controller.dto.CommentDto.*;
 import kea.alog.issue.domain.comment.CommentRepository;
 import kea.alog.issue.domain.issue.Issue;
 import kea.alog.issue.domain.issue.IssueRepository;
@@ -98,8 +97,8 @@ public class CommentService{
      * @return
      */
     @Transactional
-    public Long updateComment(CommentDataDto reqData){
-        Optional<Comment> optComment =  commentRepository.findById(reqData.getCommentPk());
+    public Long updateComment(Long commentPk, CommentCreateOrUpdateDto reqData){
+        Optional<Comment> optComment =  commentRepository.findById(commentPk);
         if(optComment.isPresent()){
             Comment comment = optComment.get();
             if(chkData(comment, reqData)){
@@ -114,7 +113,23 @@ public class CommentService{
         } else return 0L;
     }
 
-    public boolean chkData(Comment comment, CommentDataDto reqDto){
+    @Transactional
+    public Long createComment(CommentCreateOrUpdateDto reqDto){
+        Optional<Issue> optIssue = issueRepository.findById(reqDto.getIssuePk());
+        if(optIssue.isPresent()){
+            Comment commentData = Comment.builder()
+                    .pjPk(reqDto.getPjPk())
+                    .teamPk(reqDto.getTeamPk())
+                    .issuePk(optIssue.get())
+                    .commentContent(reqDto.getCommentContent())
+                    .commentAuthorPk(reqDto.getCommentAuthorPk())
+                    .build();
+            commentRepository.save(commentData);
+            return commentData.getCommentPk();
+        } else return 0L;
+    }
+
+    public boolean chkData(Comment comment, CommentCreateOrUpdateDto reqDto){
         return comment.getIssuePk().getIssuePk() == reqDto.getIssuePk() && comment.getPjPk() == reqDto.getPjPk() && comment.getTeamPk() == reqDto.getTeamPk() && comment.getCommentAuthorPk() == reqDto.getCommentAuthorPk();
     }
 }

@@ -5,7 +5,7 @@ import lombok.*;
 public class CommentDto {
     @Getter
     @NoArgsConstructor
-    public static class CommentCreateDto {
+    public static class CommentCreateOrUpdateDto {
         private Long pjPk;
         private Long teamPk;
         private Long issuePk;
@@ -13,7 +13,7 @@ public class CommentDto {
         private Long commentAuthorPk;
 
         @Builder
-        public CommentCreateDto(Long pjPk, Long teamPk, Long issuePk, String commentContent, Long commentAuthorPk){
+        public CommentCreateOrUpdateDto(Long pjPk, Long teamPk, Long issuePk, String commentContent, Long commentAuthorPk){
             this.pjPk = pjPk;
             this.teamPk = teamPk;
             this.issuePk = issuePk;

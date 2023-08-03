@@ -8,6 +8,8 @@ import kea.alog.issue.enums.IssueStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +77,14 @@ public class IssueService {
         else return IssueResponseDto.builder().build();
     }
     @Transactional
-    public boolean changeStatus(ChangeStatusOrLabel reqData){
+    public boolean changeStatus(Long issueId, ChangeStatusOrLabelDto reqData){
         try{
-            Optional<Issue> optIssue = issueRepository.findById(reqData.getIssuePk());
+            Optional<Issue> optIssue = issueRepository.findById(issueId);
             if(optIssue.isPresent()){
                 IssueStatus issueStatus = IssueStatus.valueOf(reqData.getValue());
                 Issue issue = optIssue.get().toBuilder().issueStatus(issueStatus).build();
                 issueRepository.save(issue);
-                if(optIssue.get().getIssueStatus().equals(IssueStatus.DONE)) closedIssue(reqData.getIssuePk());
+                if(optIssue.get().getIssueStatus().equals(IssueStatus.DONE)) closedIssue(issueId);
                 return true;
             } else return false;
         } catch(IllegalArgumentException e){
@@ -92,9 +94,9 @@ public class IssueService {
     }
 
     @Transactional
-    public boolean changeLabel(ChangeStatusOrLabel reqData){
+    public boolean changeLabel(Long issuePk, ChangeStatusOrLabelDto reqData){
         try{
-            Optional<Issue> optIssue = issueRepository.findById(reqData.getIssuePk());
+            Optional<Issue> optIssue = issueRepository.findById(issuePk);
             if(optIssue.isPresent()) {
                 IssueLabel issueLabel = IssueLabel.valueOf(reqData.getValue());
                 Issue issue = optIssue.get().toBuilder().issueLabel(issueLabel).build();
@@ -106,4 +108,41 @@ public class IssueService {
             return false;
         }
     }
+    /**
+     * 
+     * @param issueId
+     * @return
+     */
+    @Transactional
+    public List<IssueResponseDto> getPjIssueList(Long pjPk) {
+        List<Issue> optIssue = issueRepository.findAllByPjPk(pjPk);
+        List<IssueResponseDto> rspDto = new ArrayList<>();
+
+        for(Issue issue : optIssue){
+            IssueResponseDto addList = IssueResponseDto.builder()
+                    .issuePk(issue.getIssuePk())
+                    .pjPk(issue.getPjPk())
+                    .teamPk(issue.getTeamPk())
+                    .issueTitle(issue.getIssueTitle())
+                    .issueDescription(issue.getIssueDescription())
+                    .issueAuthorPk(issue.getIssueAuthorPk())
+                    .issueStatus(issue.getIssueStatus().toString())
+                    .issueLabel(issue.getIssueLabel().toString())
+                    .todoPk(issue.getTodoPk())
+                    .issueOpened(issue.getIssueOpened())
+                    .issueAssigneePk(issue.getIssueAssigneePk())
+                    .fileLink(issue.getFileLink())
+                    .issueId(issue.getIssueId())
+                    .build();
+            rspDto.add(addList);
+        }
+        return rspDto;
+    }
+    // @Transactional
+    // public List<IssueResponseDto> getUserIssueList(Long userPk) {
+        
+    // }
+    /**
+     * Todo : 프로젝트별 리스트, 해결할 이슈 AssigneePk의 전체 리스트와 페이징을 한 리스트
+     */
 }
