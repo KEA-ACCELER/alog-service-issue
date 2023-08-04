@@ -71,10 +71,6 @@ public class IssueDto {
             this.fileLink = fileLink;
             this.issueId = issueId;
         }
-
-        public boolean chkData(){
-            return this.issuePk != null;
-        }
     }
     @Getter
     @NoArgsConstructor
@@ -84,6 +80,20 @@ public class IssueDto {
         @Builder
         public ChangeStatusOrLabelDto(String value){
             this.value = value;
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class IssueKeyDto{
+        Long issuePk;
+        Long pjPk;
+        Long teamPk;
+
+        @Builder
+        public IssueKeyDto(Long issuePk, Long pjPk, Long teamPk){
+            this.issuePk = issuePk;
+            this.pjPk = pjPk;
+            this.teamPk = teamPk;
         }
     }
 }

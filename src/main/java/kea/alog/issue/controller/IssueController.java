@@ -53,10 +53,10 @@ public class IssueController {
         
     }
 
-    @GetMapping("/{issuePk}")
-    public ResponseEntity<Result> readIssue(@PathVariable Long issuePk){
-        IssueResponseDto rspDto = issueService.getOneIssue(issuePk);
-        if(rspDto.chkData()){
+    @GetMapping("/get")
+    public ResponseEntity<Result> readIssue(@RequestBody IssueKeyDto issueKeyDto){
+        IssueResponseDto rspDto = issueService.getOneIssue(issueKeyDto.getIssuePk(), issueKeyDto.getPjPk(), issueKeyDto.getTeamPk());
+        if(rspDto.getIssuePk() != null){
             Result result = Result.builder()
                 .isSuccess(true)
                 .message("Success load data")

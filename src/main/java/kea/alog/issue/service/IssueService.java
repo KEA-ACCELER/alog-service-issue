@@ -53,7 +53,7 @@ public class IssueService {
     }
 
     @Transactional
-    public IssueResponseDto getOneIssue(Long issuePk){
+    public IssueResponseDto getOneIssue(Long issuePk, Long pjPk, Long teamPk){
         Optional<Issue> issue = issueRepository.findById(issuePk);
         if(issue.isPresent()){
             Issue data = issue.get();
@@ -72,7 +72,8 @@ public class IssueService {
                                         .fileLink(data.getFileLink())
                                         .issueId(data.getIssueId())
                                         .build();
-            return rspDto;
+            if(rspDto.getPjPk() == pjPk && rspDto.getTeamPk() == teamPk) return rspDto;
+            else return IssueResponseDto.builder().build();
         }
         else return IssueResponseDto.builder().build();
     }
@@ -138,10 +139,60 @@ public class IssueService {
         }
         return rspDto;
     }
-    // @Transactional
-    // public List<IssueResponseDto> getUserIssueList(Long userPk) {
-        
-    // }
+    @Transactional
+    public List<IssueResponseDto> getAllUserIssueList(Long userPk) {
+        List<Issue> allList = issueRepository.findAllByIssueAssigneePk(userPk);
+        List<IssueResponseDto> rspDto = new ArrayList<>();
+        for(Issue idx : allList){
+            IssueResponseDto addList = IssueResponseDto.builder()
+                    .fileLink(idx.getFileLink())
+                    .issueAssigneePk(idx.getIssueAssigneePk())
+                    .issueAuthorPk(idx.getIssueAuthorPk())
+                    .pjPk(idx.getPjPk())
+                    .teamPk(idx.getTeamPk())
+                    .issuePk(idx.getIssuePk())
+                    .issueTitle(idx.getIssueTitle())
+                    .issueDescription(idx.getIssueDescription())
+                    .issueStatus(idx.getIssueStatus().toString())
+                    .issueLabel(idx.getIssueLabel().toString())
+                    .todoPk(idx.getTodoPk())
+                    .issueOpened(idx.getIssueOpened())
+                    .issueId(idx.getIssueId())
+                    .build();
+            rspDto.add(addList);
+        }
+        return rspDto;
+    }
+
+    /**
+     * @Todo 페이징 추가할 것 
+     * @param userPk
+     * @return
+     */
+    @Transactional
+    public List<IssueResponseDto> getPageUserIssueList(Long userPk) {
+        List<Issue> allList = issueRepository.findAllByIssueAssigneePk(userPk);
+        List<IssueResponseDto> rspDto = new ArrayList<>();
+        for(Issue idx : allList){
+            IssueResponseDto addList = IssueResponseDto.builder()
+                    .fileLink(idx.getFileLink())
+                    .issueAssigneePk(idx.getIssueAssigneePk())
+                    .issueAuthorPk(idx.getIssueAuthorPk())
+                    .pjPk(idx.getPjPk())
+                    .teamPk(idx.getTeamPk())
+                    .issuePk(idx.getIssuePk())
+                    .issueTitle(idx.getIssueTitle())
+                    .issueDescription(idx.getIssueDescription())
+                    .issueStatus(idx.getIssueStatus().toString())
+                    .issueLabel(idx.getIssueLabel().toString())
+                    .todoPk(idx.getTodoPk())
+                    .issueOpened(idx.getIssueOpened())
+                    .issueId(idx.getIssueId())
+                    .build();
+            rspDto.add(addList);
+        }
+        return rspDto;
+    }
     /**
      * Todo : 프로젝트별 리스트, 해결할 이슈 AssigneePk의 전체 리스트와 페이징을 한 리스트
      */

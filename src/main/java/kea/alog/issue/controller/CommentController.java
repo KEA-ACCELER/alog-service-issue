@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
     final private CommentService commentService;
 
-    @PostMapping("/commentCreate")
+    @PostMapping("/create")
     public ResponseEntity<Result> createComment(@RequestBody CommentCreateOrUpdateDto commentCreateDto){
         Long commentPk = commentService.createComment(commentCreateDto);
         if(commentPk > 0L){
@@ -36,7 +36,7 @@ public class CommentController {
         }
     }
 
-    @PutMapping("/commentUpdate/{commentPk}")
+    @PutMapping("/update/{commentPk}")
     public ResponseEntity<Result> updateComment(@PathVariable Long commentPk, @RequestBody CommentCreateOrUpdateDto reqDto) {
         Long updateId = commentService.updateComment(commentPk, reqDto);
         if(updateId > 0L) {
@@ -91,7 +91,7 @@ public class CommentController {
             return ResponseEntity.badRequest().body(result);
         }
     }
-    @DeleteMapping("/commentDelete/{commentPk}")
+    @DeleteMapping("/delete/{commentPk}")
     public ResponseEntity<Result> commentDelete(@PathVariable Long commentPk){
         boolean isDelete = commentService.deleteComment(commentPk);
         if(isDelete){
