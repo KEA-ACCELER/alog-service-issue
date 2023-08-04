@@ -17,3 +17,6 @@ spring:
         max-idle: 10
         min-idle: 2
       password: 'abcde'
+springdoc:
+  swagger-ui:
+    path: /api/issue/swagger
