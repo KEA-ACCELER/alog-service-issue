@@ -1,74 +1,89 @@
 package kea.alog.issue.controller.dto;
 
-import jakarta.persistence.Column;
-import kea.alog.issue.domain.issue.Issue;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 public class IssueDto {
     @Getter
-    @RequiredArgsConstructor
+    @NoArgsConstructor
     public static class IssueCreateRequestDto {
+        private Long pjPk;
+        private Long teamPk;
         private String issueTitle;
         private String issueDescription;
-        private String issueAuthorNn;
         private Long issueAuthorPk;
         private String issueStatus;
         private String issueLabel;
-        private Long topicPk;
-        private boolean issueOpened;
+        private Long todoPk;
+        private Boolean issueOpened;
         private Long issueAssigneePk;
-        private String issueAssigneeNn;
         private String fileLink;
-
-        public Issue toEntity() {
-            return Issue.builder()
-                    .issueTitle(issueTitle)
-                    .issueDescription(issueDescription)
-                    .issueAuthorNn(issueAuthorNn)
-                    .issueAuthorPk(issueAuthorPk)
-                    .issueStatus(issueStatus)
-                    .issueLabel(issueLabel)
-                    .topicPk(topicPk)
-                    .issueOpened(issueOpened)
-                    .issueAssigneePk(issueAssigneePk)
-                    .issueAssigneeNn(issueAssigneeNn)
-                    .fileLink(fileLink)
-                    .build();
-
-        }
-
-
-    }
-    @Getter
-    @RequiredArgsConstructor
-    public static class IssueResponseDto {
-        private String issueTitle;
-        private String issueDescription;
-        private String issueAuthorNn;
-        private Long issueAuthorPk;
-        private String issueStatus;
-        private String issueLabel;
-        private Long topicPk;
-        private boolean issueOpened;
-        private Long issueAssigneePk;
-        private String issueAssigneeNn;
-        private String fileLink;
-
+        private Long issueId;
         @Builder
-        public IssueResponseDto(Issue issue, String issueTitle, String issueDescription, String issueAuthorNn, Long issueAuthorPk, String issueStatus, String issueLabel, Long topicPk, boolean issueOpened, Long issueAssigneePk, String issueAssigneeNn, String fileLink) {
+        public IssueCreateRequestDto(Long pjPk, Long teamPk, Long todoPk, String issueTitle, String issueDescription, Long issueAuthorPk, String issueStatus, String issueLabel, Boolean issueOpened, Long issueAssigneePk, String fileLink, Long issueId) {
+            this.pjPk = pjPk;
+            this.teamPk = teamPk;
             this.issueTitle = issueTitle;
             this.issueDescription = issueDescription;
-            this.issueAuthorNn = issueAuthorNn;
             this.issueAuthorPk = issueAuthorPk;
             this.issueStatus = issueStatus;
             this.issueLabel = issueLabel;
-            this.topicPk = topicPk;
+            this.todoPk = todoPk;
             this.issueOpened = issueOpened;
             this.issueAssigneePk = issueAssigneePk;
-            this.issueAssigneeNn = issueAssigneeNn;
             this.fileLink = fileLink;
+            this.issueId = issueId;
+        }
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class IssueResponseDto {
+        private Long issuePk;
+        private Long pjPk;
+        private Long teamPk;
+        private String issueTitle;
+        private String issueDescription;
+        private Long issueAuthorPk;
+        private String issueStatus;
+        private String issueLabel;
+        private Long todoPk;
+        private Boolean issueOpened;
+        private Long issueAssigneePk;
+        private String fileLink;
+        private Long issueId;
+
+        @Builder
+        public IssueResponseDto(Long issuePk, Long pjPk, Long teamPk, Long todoPk, String issueTitle, String issueDescription, Long issueAuthorPk, String issueStatus, String issueLabel, Boolean issueOpened, Long issueAssigneePk, String fileLink, Long issueId) {
+            this.issuePk = issuePk;
+            this.pjPk = pjPk;
+            this.teamPk = teamPk;
+            this.issueTitle = issueTitle;
+            this.issueDescription = issueDescription;
+            this.issueAuthorPk = issueAuthorPk;
+            this.issueStatus = issueStatus;
+            this.issueLabel = issueLabel;
+            this.todoPk = todoPk;
+            this.issueOpened = issueOpened;
+            this.issueAssigneePk = issueAssigneePk;
+            this.fileLink = fileLink;
+            this.issueId = issueId;
+        }
+
+        public boolean chkData(){
+            return this.issuePk != null;
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class ChangeStatusOrLabelDto{
+        private String value;
+
+        @Builder
+        public ChangeStatusOrLabelDto(String value){
+            this.value = value;
         }
     }
 }
