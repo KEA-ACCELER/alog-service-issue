@@ -8,15 +8,15 @@ spring:
   jpa: 
     hibernate:
       ddl-auto: update
-  redis: 
-    lettuce:
-      port: ${REDIS_PORT}
-      host: ${REDIS_HOST}
-      pool: 
-        max-active: 10
-        max-idle: 10
-        min-idle: 2
-      password: 'abcde'
+  # redis: 
+  #   lettuce:
+  #     port: ${REDIS_PORT}
+  #     host: ${REDIS_HOST}
+  #     pool: 
+  #       max-active: 10
+  #       max-idle: 10
+  #       min-idle: 2
+  #     password: 'abcde'
 springdoc:
   swagger-ui:
     path: /api/issue/swagger
