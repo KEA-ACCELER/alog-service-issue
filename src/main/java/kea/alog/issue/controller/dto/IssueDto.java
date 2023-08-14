@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public class IssueDto {
     @Getter
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class IssueCreateRequestDto {
         private Long pjPk;
         private Long teamPk;
@@ -49,17 +49,6 @@ public class IssueDto {
     }
 
 
-
-    @Getter
-    @NoArgsConstructor
-    public static class ChangeStatusOrLabelDto{
-        private String value;
-
-        @Builder
-        public ChangeStatusOrLabelDto(String value){
-            this.value = value;
-        }
-    }
 
 
 }

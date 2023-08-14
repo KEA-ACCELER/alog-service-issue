@@ -35,28 +35,34 @@ public class Issue extends BaseTimeEntity implements Serializable{
     @Column(name = "issue_description", length=1000)
     private String issueDescription;
 
+    @Setter
     @Column(name = "issue_status", length=20)
     private IssueStatus issueStatus;
 
+    @Setter
     @Column(name = "issue_label", length=20)
     private IssueLabel issueLabel;
 
     @Column(name = "topic_pk")
     private Long topicPk;
 
+    @Setter
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
+    @Setter
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    @Setter
     @Column(name="issue_opened")
     private Boolean issueOpened;
 
+    @Setter
     @Column(name="issue_assignee_pk")
     private Long issueAssigneePk;
 
-    @Column(name="file_link")
+    @Column(name="file_link", length=500)
     private String fileLink;
 
     @Column(name = "issue_id")
