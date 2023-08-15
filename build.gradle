@@ -37,6 +37,9 @@ dependencies {
 
 	//Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//Openfeign
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.2'
 }
 
 tasks.named('test') {

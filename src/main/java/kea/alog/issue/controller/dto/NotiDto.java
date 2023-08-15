@@ -12,9 +12,9 @@ public class NotiDto {
         private String MsgContent;
 
         @Builder
-        public Message(Long userPk, String msgContent) {
-            UserPk = userPk;
-            MsgContent = msgContent;
+        public Message(Long UserPk, String MsgContent) {
+            this.UserPk = UserPk;
+            this.MsgContent = MsgContent;
         }
         
     }

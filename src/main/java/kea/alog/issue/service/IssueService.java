@@ -1,6 +1,7 @@
 package kea.alog.issue.service;
 
 import jakarta.transaction.Transactional;
+import kea.alog.issue.controller.dto.NotiDto;
 import kea.alog.issue.controller.dto.IssueDto.*;
 import kea.alog.issue.domain.issue.*;
 import kea.alog.issue.enums.IssueLabel;
@@ -25,20 +26,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class IssueService {
+
     @Autowired
     IssueRepository issueRepository;
+
+    @Autowired
+    NotiFeign notiFeign;
 
     // 이슈 생성
     @Transactional
     public Long createIssue(IssueCreateRequestDto reqData, String fileLink) {
-        if (fileLink == null)
-            fileLink = "";
-        log.info("reqData : " + reqData.toString());
-        log.info("fileLink : " + fileLink);
-
-        Issue issue = reqData.toEntity(fileLink);
         
-        return issueRepository.save(issue).getIssuePk();
+        Issue issue =  issueRepository.save(reqData.toEntity(fileLink));
+
+        if (issue.getIssueAssigneePk() != null){
+            NotiDto.Message message = NotiDto.Message.builder()
+                                .UserPk(issue.getIssueAssigneePk())
+                                .MsgContent(issue.getIssueId()+" 에 지정되셨습니다")
+                                .build();
+            String notification = notiFeign.createNoti(message);
+            log.info("notification : "+notification);
+        }
+        return issue.getIssuePk();
 
     }
 
@@ -111,6 +120,11 @@ public class IssueService {
             Optional<Issue> optIssue = issueRepository.findById(issuePk);
             if (optIssue.isPresent()) {
                 optIssue.get().setIssueAssigneePk(issueAssigneePk);
+                String notification= notiFeign.createNoti(NotiDto.Message.builder()
+                                        .UserPk(issueAssigneePk)
+                                        .MsgContent(optIssue.get().getIssueId()+" 에 지정되셨습니다")
+                                        .build());
+                log.info("notification : "+notification);
                 return true;
             } 
         } catch (IllegalArgumentException e) {
@@ -207,63 +221,6 @@ public class IssueService {
         return fileLink;
 
     }
-
-    /**
-     * 
-     * @param issueId
-     * @return
-    //  */
-    // @Transactional
-    // public List<IssueResponseDto> getPjIssueList(Long pjPk) {
-    //     List<Issue> optIssue = issueRepository.findAllByPjPk(pjPk);
-    //     List<IssueResponseDto> rspDto = new ArrayList<>();
-
-    //     for (Issue issue : optIssue) {
-    //         IssueResponseDto addList = IssueResponseDto.builder()
-    //                 .issuePk(issue.getIssuePk())
-    //                 .pjPk(issue.getPjPk())
-    //                 .teamPk(issue.getTeamPk())
-
-    //                 .issueDescription(issue.getIssueDescription())
-    //                 .issueAuthorPk(issue.getIssueAuthorPk())
-    //                 .issueStatus(issue.getIssueStatus().toString())
-    //                 .issueLabel(issue.getIssueLabel().toString())
-    //                 .todoPk(issue.getTopicPk())
-    //                 .issueOpened(issue.getIssueOpened())
-    //                 .issueAssigneePk(issue.getIssueAssigneePk())
-    //                 .fileLink(issue.getFileLink())
-    //                 .issueId(issue.getIssueId())
-    //                 .build();
-    //         rspDto.add(addList);
-    //     }
-    //     return rspDto;
-    // }
-
-    // @Transactional
-    // public List<IssueResponseDto> getAllUserIssueList(Long userPk) {
-    //     List<Issue> allList = issueRepository.findAllByIssueAssigneePk(userPk);
-    //     List<IssueResponseDto> rspDto = new ArrayList<>();
-    //     for (Issue idx : allList) {
-    //         IssueResponseDto addList = IssueResponseDto.builder()
-    //                 .fileLink(idx.getFileLink())
-    //                 .issueAssigneePk(idx.getIssueAssigneePk())
-    //                 .issueAuthorPk(idx.getIssueAuthorPk())
-    //                 .pjPk(idx.getPjPk())
-    //                 .teamPk(idx.getTeamPk())
-    //                 .issuePk(idx.getIssuePk())
-
-    //                 .issueDescription(idx.getIssueDescription())
-    //                 .issueStatus(idx.getIssueStatus().toString())
-    //                 .issueLabel(idx.getIssueLabel().toString())
-    //                 .todoPk(idx.getTopicPk())
-    //                 .issueOpened(idx.getIssueOpened())
-    //                 .issueId(idx.getIssueId())
-    //                 .build();
-    //         rspDto.add(addList);
-    //     }
-    //     return rspDto;
-    // }
-
 
 
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import kea.alog.issue.controller.dto.NotiDto;
 import kea.alog.issue.controller.dto.CommentDto.*;
 import kea.alog.issue.domain.comment.CommentRepository;
 import kea.alog.issue.domain.issue.Issue;
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService{
+public class CommentService {
 
     @Autowired
     CommentRepository commentRepository;
@@ -29,10 +30,13 @@ public class CommentService{
     @Autowired
     IssueRepository issueRepository;
 
+    @Autowired
+    NotiFeign notiFeign;
+
     @Transactional
-    public String deleteComment(Long commentId){
+    public String deleteComment(Long commentId) {
         Optional<Comment> optComment = commentRepository.findById(commentId);
-        if(optComment.isPresent()){
+        if (optComment.isPresent()) {
             commentRepository.delete(optComment.get());
             return commentId + " is deleted";
         }
@@ -40,47 +44,60 @@ public class CommentService{
     }
 
     @Transactional
-    public Long createComment(CommentCreateRequestDto reqDto){
+    public Long createComment(CommentCreateRequestDto reqDto) {
         Optional<Issue> optIssue = issueRepository.findById(reqDto.getIssuePk());
-        if(!optIssue.isPresent()){
-            Comment commentData = Comment.builder()
-                    .issuePk(optIssue.get())
-                    .commentContent(reqDto.getCommentContent())
-                    .commentAuthorPk(reqDto.getCommentAuthorPk())
-                    .build();
-            commentRepository.save(commentData);
-            return commentData.getCommentPk();
+        if (!optIssue.isPresent()) {
+            return null;
         }
-        return null;
+        Comment commentData = Comment.builder()
+                .issuePk(optIssue.get())
+                .commentContent(reqDto.getCommentContent())
+                .commentAuthorPk(reqDto.getCommentAuthorPk())
+                .build();
+        Comment comment = commentRepository.save(commentData);
+        // 댓글 작성자가 이슈 담당자 본인인 경우에는 알림을 보내지 않는다/
+        if (optIssue.get().getIssueAuthorPk() != reqDto.getCommentAuthorPk()) {
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAuthorPk())
+                            .MsgContent(optIssue.get().getIssueId() + " 에 댓글이 작성되었습니다").build());
+        }
+        // 댓글 작성자가 이슈 assignee 본인인 경우에는 알림을 보내지 않는다/
+        if (optIssue.get().getIssueAssigneePk() != reqDto.getCommentAuthorPk()) {
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAssigneePk())
+                            .MsgContent(optIssue.get().getIssueId()+" 에 댓글이 작성되었습니다.").build());
+        }
+        return comment.getCommentPk();
     }
 
-    //최신순으로 댓글 조회 
+    // 최신순으로 댓글 조회
     @Transactional
-    public List<Comment> getCommentList(Long issuePk, int page, int size){
+    public List<Comment> getCommentList(Long issuePk, int page, int size) {
         Optional<Issue> issue = issueRepository.findById(issuePk);
-        if(!issue.isPresent()){
+        if (!issue.isPresent()) {
             return null;
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentList = commentRepository.findAllByIssuePkOrderByCreatedDateDesc(issue.get(), pageable);
-        if(!commentList.hasContent()){
+        if (!commentList.hasContent()) {
             return null;
         }
         return commentList.getContent();
     }
 
     @Transactional
-	public List<Comment> getCommentListByAuthor(Long issuePk, Long authorPk, int page, int size) {
+    public List<Comment> getCommentListByAuthor(Long issuePk, Long authorPk, int page, int size) {
         Optional<Issue> issue = issueRepository.findById(issuePk);
-        if(!issue.isPresent()){
+        if (!issue.isPresent()) {
             return null;
         }
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentList = commentRepository.findAllByIssuePkAndCommentAuthorPkOrderByCreatedDateDesc(issue.get(), authorPk, pageable);
-        if(!commentList.hasContent()){
+        Page<Comment> commentList = commentRepository
+                .findAllByIssuePkAndCommentAuthorPkOrderByCreatedDateDesc(issue.get(), authorPk, pageable);
+        if (!commentList.hasContent()) {
             return null;
         }
         return commentList.getContent();
-	}
+    }
 
 }
