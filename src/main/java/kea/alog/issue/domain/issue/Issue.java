@@ -62,6 +62,7 @@ public class Issue extends BaseTimeEntity implements Serializable{
     @Column(name="issue_assignee_pk")
     private Long issueAssigneePk;
 
+    @Setter
     @Column(name="file_link", length=500)
     private String fileLink;
 

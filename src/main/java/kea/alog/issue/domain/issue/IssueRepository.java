@@ -10,6 +10,7 @@ import kea.alog.issue.enums.IssueLabel;
 import kea.alog.issue.enums.IssueStatus;
 
 public interface IssueRepository extends JpaRepository<Issue, Long> {
+    
     List<Issue> findAllByPjPk(Long pjPk);
     List<Issue> findAllByIssueAssigneePk(Long issueAssigneePk);
     List<Issue> findAllByPjPkAndIssueStatus(Long pjPk, IssueStatus issueStatus);

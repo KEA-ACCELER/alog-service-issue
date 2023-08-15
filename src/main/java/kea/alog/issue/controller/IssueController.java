@@ -32,25 +32,6 @@ public class IssueController {
                                                 
     }
 
-    // @PatchMapping("/close/{issuePk}")
-    // public ResponseEntity<Result> closedIssue(@PathVariable("issuePk") Long issuePk){
-    //     Long delPk = issueService.closedIssue(issuePk);
-    //     if(delPk > 0L) {
-    //         Result result = Result.builder()
-    //                         .isSuccess(true)
-    //                         .message("closed : "+ delPk)
-    //                         .build();
-    //         return ResponseEntity.ok().body(result);
-    //     } else {
-    //         Result result = Result.builder()
-    //                         .isSuccess(false)
-    //                         .message("Failed close : "+ delPk + "존재하지 않는 이슈")
-    //                         .build();
-    //         return ResponseEntity.badRequest().body(result);
-    //     }
-        
-    // }
-
     @Operation(summary = "이슈 하나 조회")
     @GetMapping("")
     public ResponseEntity<Result> readIssue(@RequestParam Long issuePk){
@@ -206,6 +187,14 @@ public class IssueController {
     @GetMapping("/by/author/cnt")
     public ResponseEntity<Integer> getIssueCntByAuthor(@RequestParam("issueAuthorPk") Long issueAuthorPk){
         return ResponseEntity.ok(issueService.getIssueCntByAuthor(issueAuthorPk));
+    }
+
+
+    @Operation(summary = "이미지 수정 (Aggr)")
+    @PatchMapping("/image")
+    public ResponseEntity<String> changeImage(@RequestParam("issuePk") Long issuePk,
+    @RequestParam("fileLink") String fileLink){
+        return ResponseEntity.ok().body(issueService.changeImage(issuePk, fileLink));
     }
 
 

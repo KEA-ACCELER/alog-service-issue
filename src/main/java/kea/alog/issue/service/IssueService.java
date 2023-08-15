@@ -196,6 +196,18 @@ public class IssueService {
         return (issues==null ? null : issues.size());
     }
 
+
+    @Transactional
+    public String changeImage(Long issuePk, String fileLink) {
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+        issue.get().setFileLink(fileLink);
+        return fileLink;
+
+    }
+
     /**
      * 
      * @param issueId
