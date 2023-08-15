@@ -133,6 +133,13 @@ public class IssueController {
         }
     }
 
+    @Operation(summary = "이슈 전체 조회")
+    @GetMapping("/all")
+    public ResponseEntity<List<Issue>> getAllIssue(@RequestParam("pkPk") Long pjPk,
+    @RequestParam("page") int page, @RequestParam("size") int size){
+        return ResponseEntity.ok(issueService.getAllIssues(pjPk, page, size));
+    }
+
     @Operation(summary = "issueStatus 별로 특정 개수만큼을 반환")
     @GetMapping("/by/status")
     public ResponseEntity<List<Issue>> getIssueByStatus(@RequestParam("pkPk") Long pjPk,

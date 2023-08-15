@@ -22,4 +22,5 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     Page<Issue> findAllByPjPkAndIssueStatusOrderByIssuePkDesc(Long pjPk, IssueStatus issueStatus, Pageable pageable);
     Page<Issue> findAllByPjPkAndIssueLabelOrderByIssuePkDesc(Long pjPk, IssueLabel issueLabel, Pageable pageable);
     Page<Issue> findAllByIssueAuthorPkOrderByIssuePkDesc(Long issueAuthorPk, Pageable pageable);
+    Page<Issue> findAllByPjPkOrderByIssuePkDesc(Long pjPk, Pageable pageable);
 }

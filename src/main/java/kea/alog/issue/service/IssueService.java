@@ -51,7 +51,6 @@ public class IssueService {
 
     }
 
-
     @Transactional
     public Issue getIssueByPk(Long issuePk) {
         Optional<Issue> issue = issueRepository.findById(issuePk);
@@ -220,6 +219,16 @@ public class IssueService {
         issue.get().setFileLink(fileLink);
         return fileLink;
 
+    }
+
+    @Transactional
+    public List<Issue> getAllIssues (Long pjPk, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Issue> issuePage = issueRepository.findAllByPjPkOrderByIssuePkDesc(pjPk, pageable);
+        if (issuePage == null){
+            return null;
+        }
+        return issuePage.stream().collect(Collectors.toList());
     }
 
 
