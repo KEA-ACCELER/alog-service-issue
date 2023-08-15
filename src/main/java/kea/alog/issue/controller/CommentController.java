@@ -2,112 +2,61 @@ package kea.alog.issue.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import kea.alog.issue.config.Result;
 import kea.alog.issue.controller.dto.CommentDto.*;
+import kea.alog.issue.domain.comment.Comment;
 import kea.alog.issue.service.CommentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/issue/comment")
+@RequestMapping("/api/issue/comments")
 public class CommentController {
-    final private CommentService commentService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Result> createComment(@RequestBody CommentCreateOrUpdateDto commentCreateDto){
-        Long commentPk = commentService.createComment(commentCreateDto);
-        if(commentPk > 0L){
-            Result result = Result.builder()
-                    .data(commentPk)
-                    .isSuccess(true)
-                    .message("Success Crated")
-                    .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                    .isSuccess(false)
-                    .message("Failed create")
-                    .build();
-            return ResponseEntity.badRequest().body(result);
-        }
+    @Autowired
+    CommentService commentService;
+
+    @Operation(summary = "댓글 생성 ")
+    @ApiResponse(responseCode = "200", description = "댓글 생성 성공, 실패시 null 반환")
+    @PostMapping("/")
+    public ResponseEntity<Long> createComment(@RequestBody CommentCreateRequestDto commentCreateRequestDto) {
+        Long commentPk = commentService.createComment(commentCreateRequestDto);
+        return ResponseEntity.ok(commentPk);
     }
 
-    @PutMapping("/update/{commentPk}")
-    public ResponseEntity<Result> updateComment(@PathVariable Long commentPk, @RequestBody CommentCreateOrUpdateDto reqDto) {
-        Long updateId = commentService.updateComment(commentPk, reqDto);
-        if(updateId > 0L) {
-            Result result = Result.builder()
-                    .data(updateId)
-                    .isSuccess(true)
-                    .message("Success updated")
-                    .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                    .isSuccess(false)
-                    .message("Failed Update")
-                    .build();
-            return ResponseEntity.badRequest().body(result);
-        }
+    @Operation(summary = "댓글 삭제")
+    @DeleteMapping("")
+    public ResponseEntity<String> commentDelete(@RequestParam Long commentPk){
+        String result = commentService.deleteComment(commentPk);
+        return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{commentPk}")
-    public ResponseEntity<Result> getOneComment(@PathVariable Long commentPk){
-        CommentDataDto rspDto = commentService.getComment(commentPk);
-        if(rspDto.getCommentPk() != 0L){
-            Result result = Result.builder()
-                    .isSuccess(true)
-                    .data(rspDto)
-                    .message("불러오기 완료")
-                    .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                    .isSuccess(false)
-                    .message("불러오기 실패")
-                    .build();
-            return ResponseEntity.badRequest().body(result);
-        }
-    }
-    @GetMapping("/{issuePk}/{currentPage}")
-    public ResponseEntity<Result> getListComment(@PathVariable Long issuePk, @PathVariable Long curentPage){
-        List<CommentDataDto> comments = commentService.getCommentList(issuePk, curentPage);
-        if(comments.size() > 0){
-            Result result = Result.builder()
-                    .isSuccess(true)
-                    .data(comments)
-                    .message("불러오기 완료")
-                    .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                    .isSuccess(false)
-                    .message("없거나 실패함")
-                    .build();
-            return ResponseEntity.badRequest().body(result);
-        }
-    }
-    @DeleteMapping("/delete/{commentPk}")
-    public ResponseEntity<Result> commentDelete(@PathVariable Long commentPk){
-        boolean isDelete = commentService.deleteComment(commentPk);
-        if(isDelete){
-            Result result = Result.builder()
-                    .isSuccess(true)
-                    .message("Success Deleted")
-                    .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                    .isSuccess(false)
-                    .message("Failed Delete")
-                    .build();
-            return ResponseEntity.badRequest().body(result);
-        }
+    @Operation(summary = "최신순으로 댓글 조회")
+    @GetMapping("/by/date")
+    public ResponseEntity<List<Comment>> commentList(@RequestParam Long issuePk,
+    @Parameter(description = "페이지 넘버, 디폴트 0") @RequestParam(defaultValue = "0") int page,
+    @Parameter(description = "페이지 사이즈, 디폴트 10") @RequestParam(defaultValue = "10") int size){
+        List<Comment> commentList = commentService.getCommentList(issuePk, page, size);
+        return ResponseEntity.ok(commentList);
     }
 
-    
+    @Operation(summary = "특정인이 쓴 댓글 조회")
+    @GetMapping("/by/author")
+    public ResponseEntity<List<Comment>> commentListByAuthor(@RequestParam Long issuePk, @RequestParam Long authorPk,
+    @Parameter(description = "페이지 넘버, 디폴트 0") @RequestParam(defaultValue = "0") int page,
+    @Parameter(description = "페이지 사이즈, 디폴트 10") @RequestParam(defaultValue = "10") int size){
+        List<Comment> commentList = commentService.getCommentListByAuthor(issuePk, authorPk, page, size);
+        return ResponseEntity.ok(commentList);
+    }
+
+
+
 }
