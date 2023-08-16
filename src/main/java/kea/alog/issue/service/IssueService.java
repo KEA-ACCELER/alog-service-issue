@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import kea.alog.issue.controller.dto.IssueDto.IssueCreateRequestDto;
 import kea.alog.issue.controller.dto.NotiDto;
+import kea.alog.issue.domain.comment.CommentRepository;
 import kea.alog.issue.domain.issue.Issue;
 import kea.alog.issue.domain.issue.IssueRepository;
 import kea.alog.issue.enums.IssueLabel;
@@ -32,6 +33,9 @@ public class IssueService {
 
     @Autowired
     NotiFeign notiFeign;
+
+    @Autowired
+    CommentRepository commentRepository;
 
 
 
@@ -232,6 +236,23 @@ public class IssueService {
             return null;
         }
         return issue.get();
+	}
+
+    @Transactional
+	public String deleteIssue(Long issuePk) {
+
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+		//관련 코멘트 전체 삭제
+        commentRepository.deleteAllByIssuePk(issue.get());
+        log.info("comment Deleted");
+        // 이슈 삭제
+        issueRepository.deleteById(issuePk);
+        log.info("issue Deleted");
+
+        return "success";
 	}
 
 

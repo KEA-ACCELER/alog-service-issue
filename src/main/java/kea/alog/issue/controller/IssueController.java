@@ -191,5 +191,10 @@ public class IssueController {
         return ResponseEntity.ok().body(issueService.changeImage(issuePk, fileLink));
     }
 
+    @Operation(summary = "이슈 삭제")
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteIssue(@RequestParam("issuePk") Long issuePk){
+        return ResponseEntity.ok().body(issueService.deleteIssue(issuePk));
+    }
 
 }
