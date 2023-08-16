@@ -185,7 +185,7 @@ public class IssueController {
 
 
     @Operation(summary = "이미지 수정 (Aggr)")
-    @PatchMapping("/image")
+    @PostMapping("/image")
     public ResponseEntity<String> changeImage(@RequestParam("issuePk") Long issuePk,
     @RequestParam("fileLink") String fileLink){
         return ResponseEntity.ok().body(issueService.changeImage(issuePk, fileLink));
