@@ -39,9 +39,10 @@ public class IssueController {
     }
     
     @Operation(summary = "이슈 상태 변경")
-    @PatchMapping("/status")
+    @PostMapping("/status")
     public ResponseEntity<Result> changeStatus(@RequestParam("issuePk") Long issuePk, 
     @Parameter(description = "이 단어중 하나 [TODO, INPROGRESS, DONE, EMERGENCY]") @RequestParam("issueStatus") String status){
+    
         boolean isSuccess = issueService.changeStatus(issuePk, status);
         if(isSuccess){
             Result result = Result.builder()
@@ -59,7 +60,7 @@ public class IssueController {
     }
  
     @Operation(summary = "이슈 라벨 변경")
-    @PatchMapping("/label")
+    @PostMapping("/label")
     public ResponseEntity<Result> changeLabel(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "이 단어중 하나 [NONE, BUG, DOCUMENTATION, DUPLICATE_ETC]") @RequestParam("issueLabel") String label){
         boolean isSuccess = issueService.changeLabel(issuePk, label);
@@ -79,7 +80,7 @@ public class IssueController {
     }
 
     @Operation(summary = "이슈 시작/끝 일자 변경")
-    @PatchMapping("/date")
+    @PostMapping("/date")
     public ResponseEntity<Result> changeDate(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "시작일자") @RequestParam("startDate") LocalDateTime startDate,
     @Parameter(description = "종료일자") @RequestParam("endDate") LocalDateTime endDate){
@@ -100,7 +101,7 @@ public class IssueController {
     }
 
     @Operation(summary = "이슈 assignee 변경")
-    @PatchMapping("/assignee")
+    @PostMapping("/assignee")
     public ResponseEntity<Result> changeAssignee(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "이슈 담당자 pk") @RequestParam("issueAssigneePk") Long issueAssigneePk){
         boolean isSuccess = issueService.changeAssignee(issuePk, issueAssigneePk);
@@ -184,7 +185,7 @@ public class IssueController {
 
 
     @Operation(summary = "이미지 수정 (Aggr)")
-    @PatchMapping("/image")
+    @PostMapping("/image")
     public ResponseEntity<String> changeImage(@RequestParam("issuePk") Long issuePk,
     @RequestParam("fileLink") String fileLink){
         return ResponseEntity.ok().body(issueService.changeImage(issuePk, fileLink));
