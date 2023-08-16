@@ -5,7 +5,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,14 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import jakarta.inject.Inject;
+
 import kea.alog.issue.controller.dto.IssueDto.IssueCreateRequestDto;
-import kea.alog.issue.domain.issue.Issue;
-import kea.alog.issue.domain.issue.IssueRepository;
 import kea.alog.issue.service.IssueService;
-import kea.alog.issue.service.NotiFeign;
+
 
 @ExtendWith(MockitoExtension.class)
 public class IssueTest {
