@@ -1,26 +1,26 @@
 package kea.alog.issue.service;
 
-import jakarta.transaction.Transactional;
-import kea.alog.issue.controller.dto.NotiDto;
-import kea.alog.issue.controller.dto.IssueDto.*;
-import kea.alog.issue.domain.issue.*;
-import kea.alog.issue.enums.IssueLabel;
-import kea.alog.issue.enums.IssueStatus;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import kea.alog.issue.controller.dto.IssueDto.IssueCreateRequestDto;
+import kea.alog.issue.controller.dto.NotiDto;
+import kea.alog.issue.domain.issue.Issue;
+import kea.alog.issue.domain.issue.IssueRepository;
+import kea.alog.issue.enums.IssueLabel;
+import kea.alog.issue.enums.IssueStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +33,17 @@ public class IssueService {
     @Autowired
     NotiFeign notiFeign;
 
+
+
     // 이슈 생성
     @Transactional
     public Long createIssue(IssueCreateRequestDto reqData, String fileLink) {
         
         Issue issue =  issueRepository.save(reqData.toEntity(fileLink));
-
+        issue.setIssueId("dragable-"+issue.getIssuePk());
         if (issue.getIssueAssigneePk() != null){
+
+
             NotiDto.Message message = NotiDto.Message.builder()
                                 .UserPk(issue.getIssueAssigneePk())
                                 .MsgContent(issue.getIssueId()+" 에 지정되셨습니다")

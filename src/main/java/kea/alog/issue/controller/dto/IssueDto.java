@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class IssueDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    
     public static class IssueCreateRequestDto {
         private Long pjPk;
         private Long teamPk;
@@ -27,6 +28,21 @@ public class IssueDto {
         private String issueId;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
+
+        @Builder
+        public IssueCreateRequestDto(Long pjPk, Long teamPk, Long topicPk, Long issueAuthorPk, String issueContent, String issueStatus, String issueLabel, Long issueAssigneePk, String issueId, LocalDateTime startDate, LocalDateTime endDate){
+            this.pjPk = pjPk;
+            this.teamPk = teamPk;
+            this.topicPk = topicPk;
+            this.issueAuthorPk = issueAuthorPk;
+            this.issueContent = issueContent;
+            this.issueStatus = issueStatus;
+            this.issueLabel = issueLabel;
+            this.issueAssigneePk = issueAssigneePk;
+            this.issueId = issueId;
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
 
         public Issue toEntity(String fileLink){
             return Issue.builder()
@@ -45,6 +61,8 @@ public class IssueDto {
                         .endDate(endDate)
                         .build();
         }
+
+   
 
     }
 
