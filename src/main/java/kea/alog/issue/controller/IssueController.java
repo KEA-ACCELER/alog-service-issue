@@ -39,7 +39,7 @@ public class IssueController {
     }
     
     @Operation(summary = "이슈 상태 변경")
-    @PostMapping("/status")
+    @PatchMapping("/status")
     public ResponseEntity<Result> changeStatus(@RequestParam("issuePk") Long issuePk, 
     @Parameter(description = "이 단어중 하나 [TODO, INPROGRESS, DONE, EMERGENCY]") @RequestParam("issueStatus") String status){
     
@@ -60,7 +60,7 @@ public class IssueController {
     }
  
     @Operation(summary = "이슈 라벨 변경")
-    @PostMapping("/label")
+    @PatchMapping("/label")
     public ResponseEntity<Result> changeLabel(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "이 단어중 하나 [NONE, BUG, DOCUMENTATION, DUPLICATE_ETC]") @RequestParam("issueLabel") String label){
         boolean isSuccess = issueService.changeLabel(issuePk, label);
@@ -80,7 +80,7 @@ public class IssueController {
     }
 
     @Operation(summary = "이슈 시작/끝 일자 변경")
-    @PostMapping("/date")
+    @PatchMapping("/date")
     public ResponseEntity<Result> changeDate(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "시작일자") @RequestParam("startDate") LocalDateTime startDate,
     @Parameter(description = "종료일자") @RequestParam("endDate") LocalDateTime endDate){
@@ -101,7 +101,7 @@ public class IssueController {
     }
 
     @Operation(summary = "이슈 assignee 변경")
-    @PostMapping("/assignee")
+    @PatchMapping("/assignee")
     public ResponseEntity<Result> changeAssignee(@RequestParam("issuePk") Long issuePk,
     @Parameter(description = "이슈 담당자 pk") @RequestParam("issueAssigneePk") Long issueAssigneePk){
         boolean isSuccess = issueService.changeAssignee(issuePk, issueAssigneePk);
@@ -185,7 +185,7 @@ public class IssueController {
 
 
     @Operation(summary = "이미지 수정 (Aggr)")
-    @PostMapping("/image")
+    @PatchMapping("/image")
     public ResponseEntity<String> changeImage(@RequestParam("issuePk") Long issuePk,
     @RequestParam("fileLink") String fileLink){
         return ResponseEntity.ok().body(issueService.changeImage(issuePk, fileLink));
