@@ -34,22 +34,8 @@ public class IssueController {
 
     @Operation(summary = "이슈 하나 조회")
     @GetMapping("")
-    public ResponseEntity<Result> readIssue(@RequestParam Long issuePk){
-        Issue rspDto = issueService.getIssueByPk(issuePk);
-        if(rspDto.getIssuePk() != null){
-            Result result = Result.builder()
-                .isSuccess(true)
-                .message("Success load data")
-                .data(rspDto)
-                .build();
-            return ResponseEntity.ok().body(result);
-        } else {
-            Result result = Result.builder()
-                .isSuccess(false)
-                .message("Failed load data")
-                .build();
-            return ResponseEntity.badRequest().body(result);
-        }
+    public ResponseEntity<Issue> readIssue(@RequestParam Long issuePk){
+        return ResponseEntity.ok(issueService.readIssue(issuePk));
     }
     
     @Operation(summary = "이슈 상태 변경")

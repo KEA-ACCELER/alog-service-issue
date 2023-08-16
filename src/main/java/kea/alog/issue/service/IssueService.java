@@ -52,16 +52,6 @@ public class IssueService {
     }
 
     @Transactional
-    public Issue getIssueByPk(Long issuePk) {
-        Optional<Issue> issue = issueRepository.findById(issuePk);
-        if (issue.isPresent()) {
-            return issue.get();
-        } 
-        return null;
-
-    }
-
-    @Transactional
     public boolean changeStatus(Long issueId, String status) {
         try {
             Optional<Issue> optIssue = issueRepository.findById(issueId);
@@ -230,6 +220,15 @@ public class IssueService {
         }
         return issuePage.stream().collect(Collectors.toList());
     }
+
+    @Transactional
+	public Issue readIssue(Long issuePk) {
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+        return issue.get();
+	}
 
 
 }
