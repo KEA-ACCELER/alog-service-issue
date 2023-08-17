@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import kea.alog.issue.controller.dto.NotiDto;
 import kea.alog.issue.controller.dto.CommentDto.*;
 import kea.alog.issue.domain.comment.CommentRepository;
 import kea.alog.issue.domain.issue.Issue;
@@ -22,114 +22,82 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService{
-    final private CommentRepository commentRepository;
-    final private IssueRepository issueRepository;
+public class CommentService {
 
-    /**
-     * 단일 comment
-     * @param commentId
-     * @return
-     */
+    @Autowired
+    CommentRepository commentRepository;
+
+    @Autowired
+    IssueRepository issueRepository;
+
+    @Autowired
+    NotiFeign notiFeign;
+
     @Transactional
-    public CommentDataDto getComment(Long commentId) {
+    public String deleteComment(Long commentId) {
         Optional<Comment> optComment = commentRepository.findById(commentId);
-        if(optComment.isPresent()){
-            Comment comment = optComment.get();
-            CommentDataDto commentGetDto = CommentDataDto.builder()
-                    .commentPk(comment.getCommentPk())
-                    .pjPk(comment.getPjPk())
-                    .teamPk(comment.getTeamPk())
-                    .issuePk(comment.getIssuePk().getIssuePk())
-                    .commentContent(comment.getCommentContent())
-                    .commentAuthorPk(comment.getCommentAuthorPk())
-                    .build();
-            return commentGetDto;
-        } else return CommentDataDto.builder().commentPk(0L).build();
-    }
-
-    /**
-     * Issue에 관련된 comment들을 전부 불러오기
-     * @param issueId
-     * @param currentSize
-     * @return
-     */
-    @Transactional
-    public List<CommentDataDto> getCommentList(Long issueId, Long currentSize){
-        Optional<Issue> optIssue = issueRepository.findById(issueId);
-        List<CommentDataDto> rspList = new ArrayList<>();
-        if(optIssue.isPresent()){
-            int pageSize = 10;
-            Pageable pageable = PageRequest.of(currentSize.intValue()-1, pageSize, Sort.by("commentPk").ascending());
-
-            Page<Comment> commentList = commentRepository.findAllByIssuePk(optIssue.get(), pageable);
-            
-            for(Comment idx : commentList.getContent()){
-                CommentDataDto addComment = CommentDataDto.builder()
-                        .commentPk(idx.getCommentPk())
-                        .pjPk(idx.getPjPk())
-                        .teamPk(idx.getTeamPk())
-                        .issuePk(idx.getIssuePk().getIssuePk())
-                        .commentContent(idx.getCommentContent())
-                        .commentAuthorPk(idx.getCommentAuthorPk())
-                        .build();
-                rspList.add(addComment);
-            }
-            return rspList;
-        } else return rspList;
-    }
-    /**
-     * 지우는 역할
-     * @param commentId
-     * @return
-     */
-    @Transactional
-    public boolean deleteComment(Long commentId){
-        Optional<Comment> optComment = commentRepository.findById(commentId);
-        if(optComment.isPresent()){
+        if (optComment.isPresent()) {
             commentRepository.delete(optComment.get());
-            return true;
-        } else return false;
-    }
-    /**
-     * 업데이트 코멘트
-     * @param reqData
-     * @return
-     */
-    @Transactional
-    public Long updateComment(Long commentPk, CommentCreateOrUpdateDto reqData){
-        Optional<Comment> optComment =  commentRepository.findById(commentPk);
-        if(optComment.isPresent()){
-            Comment comment = optComment.get();
-            if(chkData(comment, reqData)){
-                Comment updateContent = comment.toBuilder()
-                    .commentContent(reqData.getCommentContent())
-                    .build();
-                commentRepository.save(updateContent);
-                return updateContent.getCommentPk();
-            } else {
-                return 0L;
-            }
-        } else return 0L;
+            return commentId + " is deleted";
+        }
+        return "comment not found";
     }
 
     @Transactional
-    public Long createComment(CommentCreateOrUpdateDto reqDto){
+    public Long createComment(CommentCreateRequestDto reqDto) {
         Optional<Issue> optIssue = issueRepository.findById(reqDto.getIssuePk());
-        if(optIssue.isPresent()){
-            Comment commentData = Comment.builder()
-                    .pjPk(reqDto.getPjPk())
-                    .teamPk(reqDto.getTeamPk())
-                    .issuePk(optIssue.get())
-                    .commentContent(reqDto.getCommentContent())
-                    .commentAuthorPk(reqDto.getCommentAuthorPk())
-                    .build();
-            commentRepository.save(commentData);
-            return commentData.getCommentPk();
-        } else return 0L;
+        if (!optIssue.isPresent()) {
+            return null;
+        }
+        Comment commentData = Comment.builder()
+                .issuePk(optIssue.get())
+                .commentContent(reqDto.getCommentContent())
+                .commentAuthorPk(reqDto.getCommentAuthorPk())
+                .build();
+        Comment comment = commentRepository.save(commentData);
+        // 댓글 작성자가 이슈 담당자 본인인 경우에는 알림을 보내지 않는다/
+        if (optIssue.get().getIssueAuthorPk() != reqDto.getCommentAuthorPk()) {
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAuthorPk())
+                            .MsgContent(optIssue.get().getIssueId() + " 에 댓글이 작성되었습니다").build());
+        }
+        // 댓글 작성자가 이슈 assignee 본인인 경우에는 알림을 보내지 않는다/
+        if (optIssue.get().getIssueAssigneePk() != reqDto.getCommentAuthorPk()) {
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAssigneePk())
+                            .MsgContent(optIssue.get().getIssueId()+" 에 댓글이 작성되었습니다.").build());
+        }
+        return comment.getCommentPk();
     }
 
-    public boolean chkData(Comment comment, CommentCreateOrUpdateDto reqDto){
-        return comment.getIssuePk().getIssuePk() == reqDto.getIssuePk() && comment.getPjPk() == reqDto.getPjPk() && comment.getTeamPk() == reqDto.getTeamPk() && comment.getCommentAuthorPk() == reqDto.getCommentAuthorPk();
+    // 최신순으로 댓글 조회
+    @Transactional
+    public List<Comment> getCommentList(Long issuePk, int page, int size) {
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentList = commentRepository.findAllByIssuePkOrderByCreatedDateDesc(issue.get(), pageable);
+        if (!commentList.hasContent()) {
+            return null;
+        }
+        return commentList.getContent();
     }
+
+    @Transactional
+    public List<Comment> getCommentListByAuthor(Long issuePk, Long authorPk, int page, int size) {
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentList = commentRepository
+                .findAllByIssuePkAndCommentAuthorPkOrderByCreatedDateDesc(issue.get(), authorPk, pageable);
+        if (!commentList.hasContent()) {
+            return null;
+        }
+        return commentList.getContent();
+    }
+
 }

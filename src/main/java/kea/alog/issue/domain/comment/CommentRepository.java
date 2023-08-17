@@ -7,5 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import kea.alog.issue.domain.issue.Issue;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Page<Comment> findAllByIssuePk(Issue issuePk, Pageable pageable);
+    Page<Comment> findAllByIssuePkOrderByCreatedDateDesc(Issue issuePk, Pageable pageable);
+
+    Page<Comment> findAllByIssuePkAndCommentAuthorPkOrderByCreatedDateDesc(Issue issue, Long authorPk,
+            Pageable pageable);
+
+    void deleteAllByIssuePk(Issue issuePk);
 }

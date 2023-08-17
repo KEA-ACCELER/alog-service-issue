@@ -1,5 +1,6 @@
 package kea.alog.issue.domain.issue;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -31,53 +32,56 @@ public class Issue extends BaseTimeEntity implements Serializable{
     @Column(name = "issue_author_pk")
     private Long issueAuthorPk;
 
-    //<yorkie>
-    @Column(name = "issue_title", length=60)
-    private String issueTitle;
-
     @Column(name = "issue_description", length=1000)
     private String issueDescription;
 
+    @Setter
     @Column(name = "issue_status", length=20)
     private IssueStatus issueStatus;
 
+    @Setter
     @Column(name = "issue_label", length=20)
     private IssueLabel issueLabel;
 
-    @Column(name = "todo_pk")
-    private Long todoPk;
+    @Setter
+    @Column(name = "topic_pk")
+    private Long topicPk;
 
+    @Setter
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Setter
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @Setter
     @Column(name="issue_opened")
     private Boolean issueOpened;
 
+    @Setter
     @Column(name="issue_assignee_pk")
     private Long issueAssigneePk;
 
-    // @Column(name = "issue_author_nn", length=10)
-    // private String issueAuthorNn;
-
-    // @Column(name="topic_pk")
-    // private Long topicPk;
-
-    // @Column(name="issue_assignee_nn", length=10)
-    // private String issueAssigneeNn;
-
-    @Column(name="file_link")
+    @Setter
+    @Column(name="file_link", length=500)
     private String fileLink;
 
+    @Setter
     @Column(name = "issue_id")
-    private Long issueId;
+    private String issueId;
 
     @Builder(toBuilder = true)
-    public Issue(Long pjPk, Long teamPk, Long todoPk, String issueTitle, String issueDescription, Long issueAuthorPk, IssueStatus issueStatus, IssueLabel issueLabel, Boolean issueOpened, Long issueAssigneePk, String fileLink, Long issueId){
+    public Issue(Long pjPk, LocalDateTime endDate, LocalDateTime startDate, Long teamPk, Long topicPk, String issueDescription, Long issueAuthorPk, IssueStatus issueStatus, IssueLabel issueLabel, Boolean issueOpened, Long issueAssigneePk, String fileLink, String issueId){
         this.pjPk = pjPk;
         this.teamPk = teamPk;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.issueAuthorPk = issueAuthorPk;
-        this.issueTitle = issueTitle;
         this.issueDescription = issueDescription;
         this.issueStatus = issueStatus;
         this.issueLabel = issueLabel;
-        this.todoPk = todoPk;
+        this.topicPk = topicPk;
         this.issueOpened = issueOpened;
         this.issueAssigneePk = issueAssigneePk;
         this.fileLink = fileLink;

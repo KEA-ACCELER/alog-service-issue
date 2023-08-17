@@ -21,13 +21,7 @@ public class Comment extends BaseTimeEntity implements Serializable{
     @Column(name = "comment_pk")
     private Long commentPk;
 
-    @Column(name = "p_pk")
-    public Long pjPk;
-
-    @Column(name = "team_pk")
-    public Long teamPk;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "issue_pk")
     private Issue issuePk;
 
@@ -38,10 +32,8 @@ public class Comment extends BaseTimeEntity implements Serializable{
     private Long commentAuthorPk;
     
     @Builder(toBuilder = true)
-    public Comment(Long pjPk, Long teamPk, String commentContent, Long commentAuthorPk, Issue issuePk){
+    public Comment(String commentContent, Long commentAuthorPk, Issue issuePk){
         this.issuePk = issuePk;
-        this.pjPk = pjPk;
-        this.teamPk = teamPk;
         this.commentContent = commentContent;
         this.commentAuthorPk = commentAuthorPk;
     }
