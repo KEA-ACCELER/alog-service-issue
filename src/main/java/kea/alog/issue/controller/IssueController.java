@@ -210,5 +210,4 @@ public class IssueController {
         return ResponseEntity.ok().body(issueService.changeTopic(issuePk, topicPk));
     }
 
-
 }
