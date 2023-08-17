@@ -215,7 +215,8 @@ public class IssueService {
             return null;
         }
         issue.get().setFileLink(fileLink);
-        return fileLink;
+        log.info("changed fileLink : ", issue.get().getFileLink());
+        return "success";
 
     }
 
@@ -254,6 +255,22 @@ public class IssueService {
 
         return "success";
 	}
+
+    //topic pk의 done issue 개수 비율(100%) 반환
+    @Transactional
+    public Float getDoneIssueRatio(Long topicPk) {
+        List<Issue> issues = issueRepository.findAllByTopicPk(topicPk);
+        if (issues == null){
+            return null;
+        }
+        int doneCnt = 0;
+        for (Issue issue : issues){
+            if (issue.getIssueStatus().equals(IssueStatus.DONE)){
+                doneCnt++;
+            }
+        }
+        return (float)doneCnt/issues.size();
+    }
 
 
 }

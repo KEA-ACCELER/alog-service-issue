@@ -197,4 +197,10 @@ public class IssueController {
         return ResponseEntity.ok().body(issueService.deleteIssue(issuePk));
     }
 
+    @Operation(summary = "토픽별 issue에 Done된 비율")
+    @GetMapping("/by/topic/ratio")
+    public ResponseEntity<Float> getIssuePctByTopic(@RequestParam("topicPk") Long topicPk){
+        return ResponseEntity.ok(issueService.getDoneIssueRatio(topicPk));
+    }
+
 }
