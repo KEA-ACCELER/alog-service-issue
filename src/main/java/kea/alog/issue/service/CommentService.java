@@ -57,29 +57,17 @@ public class CommentService {
         Comment comment = commentRepository.save(commentData);
         // 댓글 작성자가 이슈 담당자 본인인 경우에는 알림을 보내지 않는다/
         if (optIssue.get().getIssueAuthorPk() != reqDto.getCommentAuthorPk()) {
-            // 알림 메시지가 8자가 넘으면, 8자까지만 보내고 뒤에 ... 을 붙인다
-            if (optIssue.get().getIssueDescription().length() > 8) {
-                notiFeign.createNoti(NotiDto.Message.builder()
-                                .UserPk(optIssue.get().getIssueAuthorPk())
-                                .MsgContent(optIssue.get().getIssueDescription().substring(0, 8) + "... 에 댓글이 작성되었습니다.").build());
-            } else {
-                notiFeign.createNoti(NotiDto.Message.builder()
-                                .UserPk(optIssue.get().getIssueAuthorPk())
-                                .MsgContent(optIssue.get().getIssueDescription() + " 에 댓글이 작성되었습니다.").build());
-            }
+            // 알림 메시지가 8자가 넘으면, 8자까지만 보내고 뒤에 ... 을 붙인다, 3항 연산자
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAuthorPk())
+                            .MsgContent(optIssue.get().getIssueDescription().length() > 8 ? optIssue.get().getIssueDescription().substring(0, 8) + "... 에 댓글이 작성되었습니다." : optIssue.get().getIssueDescription() + " 에 댓글이 작성되었습니다.").build());
         }
         // 댓글 작성자가 이슈 assignee 본인인 경우에는 알림을 보내지 않는다/
         if (optIssue.get().getIssueAssigneePk() != reqDto.getCommentAuthorPk()) {
             // 알림 메시지가 8자가 넘으면, 8자까지만 보내고 뒤에 ... 을 붙인다
-            if (optIssue.get().getIssueDescription().length() > 8) {
-                notiFeign.createNoti(NotiDto.Message.builder()
-                                .UserPk(optIssue.get().getIssueAssigneePk())
-                                .MsgContent(optIssue.get().getIssueDescription().substring(0, 8) + "... 에 댓글이 작성되었습니다.").build());
-            } else {
-                notiFeign.createNoti(NotiDto.Message.builder()
-                                .UserPk(optIssue.get().getIssueAssigneePk())
-                                .MsgContent(optIssue.get().getIssueDescription() + " 에 댓글이 작성되었습니다.").build());
-            }
+            notiFeign.createNoti(NotiDto.Message.builder()
+                            .UserPk(optIssue.get().getIssueAssigneePk())
+                            .MsgContent(optIssue.get().getIssueDescription().length() > 8 ? optIssue.get().getIssueDescription().substring(0, 8) + "... 에 댓글이 작성되었습니다." : optIssue.get().getIssueDescription() + " 에 댓글이 작성되었습니다.").build());
         }
         return comment.getCommentPk();
     }
