@@ -50,7 +50,7 @@ public class IssueService {
 
             NotiDto.Message message = NotiDto.Message.builder()
                                 .UserPk(issue.getIssueAssigneePk())
-                                .MsgContent(issue.getIssueId()+" 에 지정되셨습니다")
+                                .MsgContent(issue.getIssueDescription().length() > 8 ? issue.getIssueDescription().substring(0, 8)+"... 에 지정되었습니다" : issue.getIssueDescription()+"에 지정되었습니다")
                                 .build();
             String notification = notiFeign.createNoti(message);
             log.info("notification : "+notification);
@@ -119,7 +119,7 @@ public class IssueService {
                 optIssue.get().setIssueAssigneePk(issueAssigneePk);
                 String notification= notiFeign.createNoti(NotiDto.Message.builder()
                                         .UserPk(issueAssigneePk)
-                                        .MsgContent(optIssue.get().getIssueId()+" 에 지정되셨습니다")
+                                        .MsgContent(optIssue.get().getIssueDescription().length() > 8 ? optIssue.get().getIssueDescription().substring(0, 8)+"... 에 지정되었습니다" : optIssue.get().getIssueDescription()+"에 지정되었습니다")
                                         .build());
                 log.info("notification : "+notification);
                 return true;
