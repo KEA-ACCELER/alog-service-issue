@@ -203,4 +203,12 @@ public class IssueController {
         return ResponseEntity.ok(issueService.getDoneIssueRatio(topicPk));
     }
 
+    @Operation(summary = "issue의 topicPk 변경")
+    @PatchMapping("/topic")
+    public ResponseEntity<String> changeTopic(@RequestParam("issuePk") Long issuePk,
+    @RequestParam("topicPk") Long topicPk){
+        return ResponseEntity.ok().body(issueService.changeTopic(issuePk, topicPk));
+    }
+
+
 }

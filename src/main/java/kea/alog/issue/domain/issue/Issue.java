@@ -43,6 +43,7 @@ public class Issue extends BaseTimeEntity implements Serializable{
     @Column(name = "issue_label", length=20)
     private IssueLabel issueLabel;
 
+    @Setter
     @Column(name = "topic_pk")
     private Long topicPk;
 

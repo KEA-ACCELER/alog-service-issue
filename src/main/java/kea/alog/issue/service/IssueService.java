@@ -272,5 +272,15 @@ public class IssueService {
         return (float)doneCnt/issues.size();
     }
 
+    @Transactional
+    public String changeTopic(Long issuePk, Long topicPk) {
+        Optional<Issue> issue = issueRepository.findById(issuePk);
+        if (!issue.isPresent()) {
+            return null;
+        }
+        issue.get().setTopicPk(topicPk);
+        return issuePk+" isuue is move to " + topicPk;
+    }
+
 
 }
